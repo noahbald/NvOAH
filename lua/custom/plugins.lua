@@ -71,7 +71,7 @@ local plugins = {
         "MunifTanjim/prettier.nvim",
         config = function()
             require("prettier").setup({
-                bin = "pretter", -- or `prettierd`
+                bin = "prettier", -- or `prettierd`
             })
             require("core.utils").load_mappings("prettier")
         end,
