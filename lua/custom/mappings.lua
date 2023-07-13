@@ -13,9 +13,23 @@ M.general = {
     }
 }
 
+M.barbar = {
+    n = {
+        ["<S-Tab>"] = { "<cmd> BufferPrevious <CR>", "Previous Tab" },
+        ["<Tab>"] = { "<cmd> BufferNext <CR>", "Next Tab" },
+        ["<leader>tl"] = { "<cmd> BufferMovePrevious <CR>", "Move Tab Left" },
+        ["<leader>tr"] = { "<cmd> BufferMoveNext <CR>", "Move Tab Right" },
+        ["<leader>tp"] = { "<cmd> BufferPin <CR>", "Pin Tab" },
+        ["<leader>x"] = { "<cmd> BufferClose <CR>", "Close Tab" },
+        ["<leader>tx"] = { "<cmd> BufferCloseAllButPinned <CR>", "Close all Tabs" },
+        ["<leader>ts"] = { "<cmd> BufferPick <CR>", "Select tab" },
+    }
+}
+
 M.telescope = {
     n = {
         ["<leader>gc"] = { "<cmd> Telescope git_commits <CR>", "Git commits" },
+        ["<leader>gb"] = { "<cmd> Telescope git_branches <CR>", "Git branches" },
     }
 }
 
@@ -27,7 +41,7 @@ M.prettier = {
     }
 }
 
-M.persistent_breakpoints = {
+M["persistent-breakpoints"] = {
     plugin = true,
 
     n = {

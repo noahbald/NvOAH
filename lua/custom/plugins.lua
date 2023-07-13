@@ -17,6 +17,28 @@ local plugins = {
     },
 
     {
+        "romgrk/barbar.nvim",
+        dependencies = {
+            "lewis6991/gitsigns.nvim",
+            "nvim-tree/nvim-web-devicons",
+        },
+        init = function()
+            vim.g.barbar_auto_setup = false
+        end,
+        opts = {
+            preset = "slanted",
+            icons = {
+                current = { button = "󰅙" },
+                inactive = { button = "󰅙" },
+                pinned = { button = '', filename = true },
+            },
+        },
+        lazy = false,
+        version = "^1.0.0",
+        name = "barbar",
+    },
+
+    {
         "Weissle/persistent-breakpoints.nvim",
         config = function()
             require("persistent-breakpoints").setup {
