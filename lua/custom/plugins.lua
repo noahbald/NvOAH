@@ -56,6 +56,17 @@ local plugins = {
     },
 
     {
+        "nvim-pack/nvim-spectre",
+        keys = {
+            { "<leader>fr", mode = "n", desc = "Find and replace" },
+            { "<leader>fr", mode = "v", desc = "Find and replace" },
+        },
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        },
+    },
+
+    {
         "rbong/vim-flog",
         dependencies = {
             "tpope/vim-fugitive",

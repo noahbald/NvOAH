@@ -26,6 +26,15 @@ M.barbar = {
     }
 }
 
+M.spectre = {
+    n = {
+        ["<leader>fr"] = { "<cmd> lua require(\"spectre\").open_visual() <CR>", "Find and replace"},
+    },
+    v = {
+        ["<leader>fr"] = { "<Esc> <cmd> lua require(\"spectre\").open_visual() <CR>", "Find and replace" },
+    },
+}
+
 M.telescope = {
     n = {
         ["<leader>gc"] = { "<cmd> Telescope git_commits <CR>", "Git commits" },
