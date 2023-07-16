@@ -1,19 +1,44 @@
 local overrides = require("custom.configs.overrides")
 
+local function init_git(plugin)
+    -- load flog only when a git file is opened
+    vim.api.nvim_create_autocmd({ "BufRead" }, {
+        group = vim.api.nvim_create_augroup(plugin, { clear = true }),
+        callback = function()
+            vim.fn.system("git -C " .. '"' .. vim.fn.expand "%:p:h" .. '"' .. " rev-parse")
+            if vim.v.shell_error == 0 then
+                vim.api.nvim_del_augroup_by_name(plugin)
+                vim.schedule(function()
+                    require("lazy").load { plugins = { plugin } }
+                end)
+            end
+        end,
+    })
+end
+
 ---@type NvPluginSpec[]
 local plugins = {
 
     -- Override plugin definition options
-    -- my plugins
+    -- UI
+
     {
-        "rmagatti/auto-session",
-        lazy = false,
+        "echasnovski/mini.animate",
         config = function()
-            require("auto-session").setup {
-                log_level = "info",
-            }
-            require "custom.configs.auto-session"
-        end
+            local opts = require "custom.configs.mini"
+            require("mini.animate").setup(opts.animate)
+        end,
+        event = "VeryLazy",
+    },
+
+    {
+        "echasnovski/mini.trailspace",
+        event = "VeryLazy",
+    },
+
+    {
+        "RRethy/vim-illuminate",
+        event = "VeryLazy",
     },
 
     {
@@ -25,79 +50,67 @@ local plugins = {
         init = function()
             vim.g.barbar_auto_setup = false
         end,
-        opts = {
-            preset = "slanted",
-            icons = {
-                current = { button = "󰅙" },
-                inactive = { button = "󰅙" },
-                pinned = { button = '', filename = true },
-            },
-        },
+        opts = require 'custom.configs.barbar',
         lazy = false,
         version = "^1.0.0",
         name = "barbar",
     },
 
     {
-        "Weissle/persistent-breakpoints.nvim",
+        "gorbit99/codewindow.nvim",
         config = function()
-            require("persistent-breakpoints").setup {
-                load_breakpoints_event = { "BufReadPost" },
-            }
+            local codewindow = require("codewindow")
+            codewindow.setup()
+            codewindow.apply_default_keybinds()
+            codewindow.open_minimap()
         end,
-        dependencies = {
-            "mfussenegger/nvim-dap",
-        },
-        keys = {
-            { "BB", mode = "n", desc = "Toggle breakpoint" },
-            { "BC", mode = "n", desc = "Set conditional breakpoint" },
-            { "BT", mode = "n", desc = "Remove all breakpoints" },
-        }
-    },
-
-    {
-        "nvim-pack/nvim-spectre",
-        keys = {
-            { "<leader>fr", mode = "n", desc = "Find and replace" },
-            { "<leader>fr", mode = "v", desc = "Find and replace" },
-        },
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-        },
-    },
-
-    {
-        "rbong/vim-flog",
-        dependencies = {
-            "tpope/vim-fugitive",
-        },
-        ft = { "gitcommit", "diff" },
         init = function()
-            -- load flog only when a git file is opened
             vim.api.nvim_create_autocmd({ "BufRead" }, {
-                group = vim.api.nvim_create_augroup("FlogLazyLoad", { clear = true }),
                 callback = function()
-                    vim.fn.system("git -C " .. '"' .. vim.fn.expand "%:p:h" .. '"' .. " rev-parse")
-                    if vim.v.shell_error == 0 then
-                        vim.api.nvim_del_augroup_by_name "FlogLazyLoad"
-                        vim.schedule(function()
-                            require("lazy").load { plugins = { "vim-flog" } }
-                        end)
-                    end
+                    vim.schedule(function()
+                        require("lazy").load { plugins = { "codewindow.nvim" } }
+                    end)
                 end,
             })
         end,
     },
 
     {
-        "karb94/neoscroll.nvim",
+        "folke/todo-comments.nvim",
         config = function()
-            require("neoscroll").setup()
-
-            local timing = require "custom.configs.neoscroll"
-            require("neoscroll.config").set_mappings(timing)
+            require("todo-comments").setup()
+            require("core.utils").load_mappings("todo-comments")
         end,
-        lazy = false,
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        },
+        event = "VeryLazy",
+    },
+
+    -- Editor
+
+    {
+        "rmagatti/auto-session",
+        config = function()
+            local opts = require "custom.configs.auto-session"
+            require("auto-session").setup(opts)
+        end,
+        init = function()
+            -- Ignore auto-session if files are given in args
+            local arg_count = vim.api.nvim_exec("echo argc()", true)
+            if tonumber(arg_count) ~= 0 then
+                return
+            end
+            require("lazy").load { plugins = { "auto-session" } }
+        end,
+    },
+
+    {
+        "kevinhwang91/nvim-ufo",
+        dependencies = {
+            "kevinhwang91/promise-async",
+        },
+        event = "VeryLazy",
     },
 
     {
@@ -121,23 +134,111 @@ local plugins = {
     },
 
     {
-        "gorbit99/codewindow.nvim",
+        "mattn/emmet-vim",
+        ft = { "html", "eruby", "javascript" },
+    },
+
+    -- Debugging
+
+    {
+        "mfussenegger/nvim-dap",
         config = function()
-            local codewindow = require("codewindow")
-            codewindow.setup({
-                auto_enable = true, -- always show on startup
-            })
-            codewindow.apply_default_keybinds()
+            require("core.utils").load_mappings("dap")
         end,
-        init = function()
-            vim.api.nvim_create_autocmd({ "BufRead" }, {
-                callback = function()
-                    vim.schedule(function()
-                        require("lazy").load { plugins = { "codewindow.nvim" } }
-                    end)
-                end,
-            })
+        dependencies = {
+            "Weissle/persistent-breakpoints.nvim",
+        },
+    },
+
+    {
+        "rcarriga/nvim-dap-ui",
+        dependencies = {
+            "mfussenegger/nvim-dap",
+        },
+        config = function()
+            local dap = require("dap")
+            local dapui = require("dapui")
+            dapui.setup()
+            dap.listeners.after.event_initialized["dapui_config"] = function()
+                dapui.open()
+            end
+            dap.listeners.before.event_terminated["dapui_config"] = function()
+                dapui.close()
+            end
+            dap.listeners.before.event_exited["dapui_config"] = function()
+                dapui.close()
+            end
         end,
+    },
+
+    {
+        "Weissle/persistent-breakpoints.nvim",
+        config = function()
+            require("persistent-breakpoints").setup {
+                load_breakpoints_event = { "BufReadPost" },
+            }
+        end,
+    },
+
+    {
+        "mxsdev/nvim-dap-vscode-js",
+        config = function()
+            require("dap-vscode-js").setup {
+                adapters = { 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost' },
+                debugger_path = "(runtimedir)/lazy/vscode-js-debug",
+            }
+            require("core.utils").load_mappings("dap-vscode-js")
+            -- TODO: Initialise languages with dap
+        end,
+        dependencies = {
+            "mfussenegger/nvim-dap",
+            "rcarriga/nvim-dap-ui",
+            {
+                "microsoft/vscode-js-debug",
+                build = "npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out",
+            }
+        },
+        ft = "javascript",
+    },
+
+    -- Tools
+
+    {
+        "nvim-pack/nvim-spectre",
+        config = function()
+            require("spectre").setup()
+            require("core.utils").load_mappings("spectre")
+        end,
+        keys = {
+            { "<leader>fr", mode = "n", desc = "Find and replace" },
+            { "<leader>fr", mode = "v", desc = "Find and replace" },
+        },
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        },
+    },
+
+    -- Git
+
+    {
+        "f-person/git-blame.nvim",
+        config = function()
+            require("gitblame")
+            require("core.utils").load_mappings("gitblame")
+        end,
+        init = init_git("git-blame.nvim"),
+    },
+
+    {
+        "rbong/vim-flog",
+        config = function()
+            require("core.utils").load_mappings("flog")
+        end,
+        dependencies = {
+            "tpope/vim-fugitive",
+        },
+        ft = { "gitcommit", "diff" },
+        init = init_git("vim-flog"),
     },
 
     -- default custom plugins

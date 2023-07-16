@@ -1,3 +1,4 @@
+-- Ensure nvim-tree stays in view as session changes
 vim.api.nvim_create_autocmd({ 'BufEnter' }, {
   pattern = 'NvimTree*',
   callback = function()
@@ -9,3 +10,12 @@ vim.api.nvim_create_autocmd({ 'BufEnter' }, {
     end
   end,
 })
+
+local M = {
+    log_level = "info",
+    pre_save = function()
+        -- Include barbar.nvim in session, for tab order and pins
+        vim.api.nvim_exec_autocmds("User", { pattern = "SessionSavePre" })
+    end,
+}
+return M

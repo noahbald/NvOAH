@@ -13,6 +13,8 @@ M.general = {
     }
 }
 
+-- UI
+
 M.barbar = {
     n = {
         ["<S-Tab>"] = { "<cmd> BufferPrevious <CR>", "Previous Tab" },
@@ -26,21 +28,15 @@ M.barbar = {
     }
 }
 
-M.spectre = {
+M["todo-comments"] = {
+    plugin = true,
+
     n = {
-        ["<leader>fr"] = { "<cmd> lua require(\"spectre\").open_visual() <CR>", "Find and replace"},
-    },
-    v = {
-        ["<leader>fr"] = { "<Esc> <cmd> lua require(\"spectre\").open_visual() <CR>", "Find and replace" },
+        ["<leader>ft"] = { "<cmd> TodoTelescope <CR>", "Find TODOs" },
     },
 }
 
-M.telescope = {
-    n = {
-        ["<leader>gc"] = { "<cmd> Telescope git_commits <CR>", "Git commits" },
-        ["<leader>gb"] = { "<cmd> Telescope git_branches <CR>", "Git branches" },
-    }
-}
+-- Editor
 
 M.prettier = {
     plugin = true,
@@ -50,15 +46,41 @@ M.prettier = {
     }
 }
 
-M["persistent-breakpoints"] = {
+-- Tools
+
+M.spectre = {
     plugin = true,
 
     n = {
-        ["BB"] = { "<cmd>lua require('persistent-breakpoints.api').toggle_breakpoint()<cr>", "Toggle breakpoint"},
-        ["BC"] = { "<cmd>lua require('persistent-breakpoints.api').set_conditional_breakpoint()<cr>", "Set conditional breakpoint" },
-        ["BR"] = { "<cmd>lua require('persistent-breakpoints.api').clear_all_breakpoints()<cr>", "Remove all breakpoints" },
+        ["<leader>fr"] = { "<cmd> lua require(\"spectre\").open_visual() <CR>", "Find and replace"},
+    },
+    v = {
+        ["<leader>fr"] = { "<Esc> <cmd> lua require(\"spectre\").open_visual() <CR>", "Find and replace" },
+    },
+}
+
+-- Debugging
+
+M.dap = {
+    plugin = true,
+
+    n = {
+        ["BB"] = { "<cmd> lua require('persistent-breakpoints.api').toggle_breakpoint() <CR>", "Toggle breakpoint"},
+        ["BC"] = { "<cmd> lua require('persistent-breakpoints.api').set_conditional_breakpoint() <CR>", "Set conditional breakpoint" },
+        ["BX"] = { "<cmd> lua require('persistent-breakpoints.api').clear_all_breakpoints() <CR>", "Remove all breakpoints" },
     }
 }
+
+M["dap-vscode-js"] = {
+    plugin = true,
+
+    n = {
+        ["BR"] = function()
+        end,
+    }
+}
+
+-- Git
 
 M.flog = {
     plugin = true,
@@ -68,6 +90,20 @@ M.flog = {
     },
 }
 
--- more keybinds!
+M.gitblame = {
+    plugin = true,
+
+    n = {
+        ["<leader>gs"] = { "<cmd> GitBlameCopySHA <CR>", "Copy line's Git SHA" },
+    },
+}
+-- Overrides
+
+M.telescope = {
+    n = {
+        ["<leader>gc"] = { "<cmd> Telescope git_commits <CR>", "Git commits" },
+        ["<leader>gb"] = { "<cmd> Telescope git_branches <CR>", "Git branches" },
+    }
+}
 
 return M

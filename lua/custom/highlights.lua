@@ -4,16 +4,23 @@
 
 local M = {}
 
+
 ---@type Base46HLGroupsList
 M.override = {
-  Comment = {
-    italic = true,
-  },
+    Comment = {
+        italic = true,
+    },
 }
 
 ---@type HLTable
 M.add = {
-  NvimTreeOpenedFolderName = { fg = "green", bold = true },
+    IlluminatedWord = { bg = "#252931" },
+    IlluminatedCurWord = { bg = "#252931" },
+    IlluminatedWordText = { bg = "#252931" },
+    IlluminatedWordRead = { bg = "#252931" },
+    IlluminatedWordWrite = { bg = "#252931" },
+
+    NvimTreeOpenedFolderName = { fg = "green", bold = true },
 }
 
 return M
