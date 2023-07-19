@@ -107,8 +107,13 @@ local plugins = {
 
     {
         "kevinhwang91/nvim-ufo",
+        config = function()
+            local opts = require("custom.configs.ufo")
+            require("ufo").setup(opts)
+        end,
         dependencies = {
             "kevinhwang91/promise-async",
+            "luukvbaal/statuscol.nvim",
         },
         event = "VeryLazy",
     },
@@ -136,6 +141,14 @@ local plugins = {
     {
         "mattn/emmet-vim",
         ft = { "html", "eruby", "javascript" },
+    },
+
+    {
+        config = function()
+            require("core.utils").load_mappings("color-converter")
+        end,
+        "NTBBloodbath/color-converter.nvim",
+        ft = { "html", "eruby", "javascript", "css" },
     },
 
     -- Debugging
@@ -168,6 +181,7 @@ local plugins = {
             dap.listeners.before.event_exited["dapui_config"] = function()
                 dapui.close()
             end
+            require("core.utils").load_mappings("dap-ui")
         end,
     },
 
@@ -183,12 +197,12 @@ local plugins = {
     {
         "mxsdev/nvim-dap-vscode-js",
         config = function()
+            local utils = require("dap-vscode-js.utils")
             require("dap-vscode-js").setup {
                 adapters = { 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost' },
-                debugger_path = "(runtimedir)/lazy/vscode-js-debug",
+                debugger_path = utils.join_paths(utils.get_runtime_dir(), "lazy/vscode-js-debug"),
             }
-            require("core.utils").load_mappings("dap-vscode-js")
-            -- TODO: Initialise languages with dap
+            require("custom.configs.nvim-dap-vscode-js")
         end,
         dependencies = {
             "mfussenegger/nvim-dap",

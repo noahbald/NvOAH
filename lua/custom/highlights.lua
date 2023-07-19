@@ -10,15 +10,27 @@ M.override = {
     Comment = {
         italic = true,
     },
+    SpellBad = {
+        sp = "green",
+        bg = "grey",
+    },
+    FoldColumn = {
+        fg = "grey",
+        bg = "black",
+    },
+    Folded = {
+        fg = "grey",
+        bg = "black",
+    },
 }
 
 ---@type HLTable
 M.add = {
-    IlluminatedWord = { bg = "#252931" },
-    IlluminatedCurWord = { bg = "#252931" },
-    IlluminatedWordText = { bg = "#252931" },
-    IlluminatedWordRead = { bg = "#252931" },
-    IlluminatedWordWrite = { bg = "#252931" },
+    IlluminatedWord = { bg = "grey" },
+    IlluminatedCurWord = { bg = "grey" },
+    IlluminatedWordText = { bg = "grey" },
+    IlluminatedWordRead = { bg = "grey" },
+    IlluminatedWordWrite = { bg = "grey" },
 
     NvimTreeOpenedFolderName = { fg = "green", bold = true },
 }
