@@ -46,6 +46,15 @@ M.prettier = {
     }
 }
 
+M["color-converter"] = {
+    plugin = true,
+
+    n = {
+        ["<leader>cl"] = { "<cmd> lua require(\"color-converter\").cycle() <CR>", "Cycle Colour Conversion" },
+        ["<leader>c#"] = { "<cmd> lua require(\"color-converter\").to_hex() <CR>", "Convert color to hex" },
+    }
+}
+
 -- Tools
 
 M.spectre = {
@@ -65,21 +74,29 @@ M.dap = {
     plugin = true,
 
     n = {
-        ["BB"] = { "<cmd> lua require('persistent-breakpoints.api').toggle_breakpoint() <CR>", "Toggle breakpoint"},
-        ["BC"] = { "<cmd> lua require('persistent-breakpoints.api').set_conditional_breakpoint() <CR>", "Set conditional breakpoint" },
-        ["BX"] = { "<cmd> lua require('persistent-breakpoints.api').clear_all_breakpoints() <CR>", "Remove all breakpoints" },
+        ["<leader>rb"] = { "<cmd> lua require('persistent-breakpoints.api').toggle_breakpoint() <CR>", "DAP: Toggle breakpoint"},
+        ["<leader>rc"] = { "<cmd> lua require('persistent-breakpoints.api').set_conditional_breakpoint() <CR>", "DAP: Set conditional breakpoint" },
+        ["<leader>rxb"] = { "<cmd> lua require('persistent-breakpoints.api').clear_all_breakpoints() <CR>", "DAP: Remove all breakpoints" },
+        ["<leader>rr"] = { "<cmd> lua require('dap').continue() <CR>", "DAP: Start" },
+        ["<leader>ri"] = { "<cmd> lua require('dap').step_into() <CR>", "DAP: Step into" },
+        ["<leader>ro"] = { "<cmd> lua require('dap').step_over() <CR>", "DAP: Step over" },
+        ["<leader>rp"] = { "<cmd> lua require('dap').pause.toggle() <CR>", "DAP: Play/pause" },
+        ["<leader>rxq"] = { "<cmd> lua require('dap').close() <CR>", "DAP: Quit debugger" },
+        ["<leader>rxd"] = { "<cmd> lua require('dap').disconnect() <CR>", "DAP: Disconnect" },
+        ["<leader>rxx"] = { "<cmd> lua require('dap').terminate() <CR>", "DAP: Terminate" },
+        ["<leader>rv"] = { "<cmd> lua require('dap.ui.widgets').hover() <CR>", "DAP: Hover variables" },
+        ["<leader>rs"] = { "<cmd> lua require('dap.ui.widgets').scopes() <CR>", "DAP: Scopes" },
     }
 }
 
-M["dap-vscode-js"] = {
+M["dap-ui"] = {
     plugin = true,
 
     n = {
-        ["BR"] = function()
-        end,
+        ["<leader>rxu"] = { "<cmd> lua require('dapui').toggle() <CR>", "DAP: Toggle UI" },
+        ["<leader>re"] = { "<cmd> lua require('dapui').eval(vim.fn.input '[Expression] > ') <CR>", "DAP: Eval input" },
     }
 }
-
 -- Git
 
 M.flog = {

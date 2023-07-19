@@ -10,9 +10,10 @@
 vim.opt.rnu = true
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
+vim.opt.spell = true
+vim.opt.spelllang = "en_au"
 
 -- Restore barbar session
-vim.opt.sessionoptions:append 'globals'
 vim.api.nvim_create_user_command(
     'Mksession',
     function(attr)

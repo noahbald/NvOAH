@@ -1,3 +1,7 @@
+-- FIXME: Adding globals doesn't seem to help in saving barbar sessions
+-- FIXME: Adding globals causes error when writing to statusline
+-- vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions,globals"
+
 -- Ensure nvim-tree stays in view as session changes
 vim.api.nvim_create_autocmd({ 'BufEnter' }, {
   pattern = 'NvimTree*',
