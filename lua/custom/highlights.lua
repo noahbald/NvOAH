@@ -14,6 +14,10 @@ M.override = {
         sp = "green",
         bg = "grey",
     },
+    Fold = {
+        fg = "grey",
+        bg = "black",
+    },
     FoldColumn = {
         fg = "grey",
         bg = "black",
