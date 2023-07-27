@@ -47,7 +47,7 @@ M.mason = {
         "deno",
         "prettier",
         "ruby-lsp",
-        "eslint_d",
+        "eslint",
 
         -- c/cpp stuff
         "clangd",
