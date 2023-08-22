@@ -16,6 +16,14 @@ local function init_git(plugin)
     })
 end
 
+local function load_on_cwd(plugin)
+    local arg_count = vim.api.nvim_exec("echo argc()", true)
+    if tonumber(arg_count) ~= 0 then
+        return
+    end
+    require("lazy").load { plugins = { plugin } }
+end
+
 ---@type NvPluginSpec[]
 local plugins = {
 
@@ -29,6 +37,7 @@ local plugins = {
             require("mini.animate").setup(opts.animate)
         end,
         event = "VeryLazy",
+        lazy = "false",
     },
 
     {
@@ -68,7 +77,7 @@ local plugins = {
             vim.api.nvim_create_autocmd({ "BufRead" }, {
                 callback = function()
                     vim.schedule(function()
-                        require("lazy").load { plugins = { "codewindow.nvim" } }
+                        load_on_cwd("codewindow.nvim")
                     end)
                 end,
             })
@@ -96,12 +105,7 @@ local plugins = {
             require("auto-session").setup(opts)
         end,
         init = function()
-            -- Ignore auto-session if files are given in args
-            local arg_count = vim.api.nvim_exec("echo argc()", true)
-            if tonumber(arg_count) ~= 0 then
-                return
-            end
-            require("lazy").load { plugins = { "auto-session" } }
+            load_on_cwd("auto-session");
         end,
     },
 
