@@ -10,10 +10,6 @@ M.override = {
     Comment = {
         italic = true,
     },
-    SpellBad = {
-        sp = "green",
-        bg = "grey",
-    },
     Fold = {
         fg = "grey",
         bg = "black",

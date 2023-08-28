@@ -1,11 +1,25 @@
 local overrides = require("custom.configs.overrides")
 
+local run_lean = false
+if string.find(vim.v.progpath, "git") then
+    run_lean = true
+end
+
+local init_git_flag = nil
 local function init_git(plugin)
+    if run_lean then
+        return
+    end
     -- load flog only when a git file is opened
     vim.api.nvim_create_autocmd({ "BufRead" }, {
         group = vim.api.nvim_create_augroup(plugin, { clear = true }),
         callback = function()
-            vim.fn.system("git -C " .. '"' .. vim.fn.expand "%:p:h" .. '"' .. " rev-parse")
+            if (init_git_flag == false) then
+                return
+            end
+            if (init_git_flag == nil) then
+                vim.fn.system("git rev-parse --show-toplevel 2> /dev/null")
+            end
             if vim.v.shell_error == 0 then
                 vim.api.nvim_del_augroup_by_name(plugin)
                 vim.schedule(function()
@@ -37,7 +51,6 @@ local plugins = {
             require("mini.animate").setup(opts.animate)
         end,
         event = "VeryLazy",
-        lazy = "false",
     },
 
     {
@@ -60,7 +73,7 @@ local plugins = {
             vim.g.barbar_auto_setup = false
         end,
         opts = require 'custom.configs.barbar',
-        lazy = false,
+        lazy = run_lean,
         version = "^1.0.0",
         name = "barbar",
     },
@@ -74,6 +87,9 @@ local plugins = {
             codewindow.open_minimap()
         end,
         init = function()
+            if run_lean then
+                return
+            end
             vim.api.nvim_create_autocmd({ "BufRead" }, {
                 callback = function()
                     vim.schedule(function()
@@ -105,6 +121,9 @@ local plugins = {
             require("auto-session").setup(opts)
         end,
         init = function()
+            if run_lean then
+                return
+            end
             load_on_cwd("auto-session");
         end,
     },
