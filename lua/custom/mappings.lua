@@ -4,13 +4,16 @@ local M = {}
 M.general = {
     n = {
         [";"] = { ":", "enter command mode", opts = { nowait = true } },
-        ["<A-j>"] = { ":m .+1 <CR> =="},
-        ["<A-k>"] = { ":m .-2 <CR> =="},
+        ["<A-j>"] = { ":m .+1 <CR> ==", "move line down" },
+        ["<A-k>"] = { ":m .-2 <CR> ==", "move line up" },
     },
     i = {
-        ["<A-j>"] = { "<Esc>:m .+1 <CR> ==gi"},
-        ["<A-k>"] = { "<Esc>:m .-2 <CR> ==gi"},
-    }
+        ["<A-j>"] = { "<Esc>:m .+1 <CR> ==gi", "move line down" },
+        ["<A-k>"] = { "<Esc>:m .-2 <CR> ==gi", "move line up" },
+    },
+    v = {
+        [">"] = { ">gv", "indent" },
+    },
 }
 
 -- UI

@@ -11,6 +11,7 @@ M.treesitter = {
         "typescript",
         "tsx",
         "embedded_template",
+        -- "svelte",
         "c",
         "markdown",
         "markdown_inline",
@@ -25,7 +26,8 @@ M.treesitter = {
         enable = true,
         enable_rename = true,
         filetypes = {
-            'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'svelte', 'vue', 'tsx', 'jsx', 'rescript', 'eruby',
+            'html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'vue', 'tsx', 'jsx', 'rescript', 'eruby',
+            -- 'svelte',
             'xml',
             'php',
             'markdown',
@@ -48,6 +50,7 @@ M.mason = {
         "prettier",
         "ruby-lsp",
         "eslint",
+        -- "svelte-language-server",
 
         -- c/cpp stuff
         "clangd",
