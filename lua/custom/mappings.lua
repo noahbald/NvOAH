@@ -39,6 +39,14 @@ M["todo-comments"] = {
     },
 }
 
+M.trouble = {
+    plugin = true,
+    
+    n = {
+        ["<leader>tb"] = { "<cmd> TroubleToggle <cr>", "Toggle issues" },
+    },
+}
+
 -- Editor
 
 M.prettier = {
@@ -56,6 +64,33 @@ M["color-converter"] = {
         ["<leader>cl"] = { "<cmd> lua require(\"color-converter\").cycle() <CR>", "Cycle Colour Conversion" },
         ["<leader>c#"] = { "<cmd> lua require(\"color-converter\").to_hex() <CR>", "Convert color to hex" },
     }
+}
+
+M.lspsaga = {
+    plugin = true,
+
+    n = {
+        ["<leader>ca"] = { "<Esc>:Lspsaga code_action<CR>", "Code action" },
+        ["<leacer>ra"] = { "<Esc>:Lspsaga rename ++project<CR>", "Rename action" },
+    },
+}
+
+M.hop = {
+    plugin = true,
+
+    n = {
+        ["<leader>gw"] = { "<cmd> HopWord <cr>", "Go to word" },
+        ["<leader>gl"] = { "<cmd> HopLine <cr>", "Go to line" },
+        ["<leader>gL"] = { "<cmd> HopLineStart <cr>", "Go to line start" },
+    },
+}
+
+M.persistence = {
+    plugin = true,
+
+    n = {
+        ["<leader>rs"] = { "<cmd> lua require(\"persistence\").stop() <cr>", "Don't autosave this session" },
+    },
 }
 
 -- Tools
@@ -117,6 +152,15 @@ M.gitblame = {
         ["<leader>gs"] = { "<cmd> GitBlameCopySHA <CR>", "Copy line's Git SHA" },
     },
 }
+
+M.lazygit = {
+    plugin = true,
+
+    n = {
+        ["<leader>lg"] = { "<cmd> LazyGitCurrentFile <cr>", "Show lazy git" },
+    },
+}
+
 -- Overrides
 
 M.telescope = {

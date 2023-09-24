@@ -1,4 +1,4 @@
-local null-ls = require
+local null_ls = require "null-ls"
 
 local b = null_ls.builtins
 

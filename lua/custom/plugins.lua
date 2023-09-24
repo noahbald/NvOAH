@@ -5,31 +5,6 @@ if string.find(vim.v.progpath, "git") then
     run_lean = true
 end
 
-local init_git_flag = nil
-local function init_git(plugin)
-    if run_lean then
-        return
-    end
-    -- load flog only when a git file is opened
-    vim.api.nvim_create_autocmd({ "BufRead" }, {
-        group = vim.api.nvim_create_augroup(plugin, { clear = true }),
-        callback = function()
-            if (init_git_flag == false) then
-                return
-            end
-            if (init_git_flag == nil) then
-                vim.fn.system("git rev-parse --show-toplevel 2> /dev/null")
-            end
-            if vim.v.shell_error == 0 then
-                vim.api.nvim_del_augroup_by_name(plugin)
-                vim.schedule(function()
-                    require("lazy").load { plugins = { plugin } }
-                end)
-            end
-        end,
-    })
-end
-
 local function load_on_cwd(plugin)
     local arg_count = vim.api.nvim_exec("echo argc()", true)
     if tonumber(arg_count) ~= 0 then
@@ -60,13 +35,19 @@ local plugins = {
 
     {
         "RRethy/vim-illuminate",
-        event = "VeryLazy",
+        config = function()
+            local opts = require("custom.configs.illuminate")
+            require("illuminate").configure(opts)
+        end,
+        dependencies = {
+            "nvim-treesitter",
+        },
+        event = { "CursorHold", "CursorHoldI" },
     },
 
     {
         "romgrk/barbar.nvim",
         dependencies = {
-            "lewis6991/gitsigns.nvim",
             "nvim-tree/nvim-web-devicons",
         },
         init = function()
@@ -76,28 +57,6 @@ local plugins = {
         lazy = run_lean,
         version = "^1.0.0",
         name = "barbar",
-    },
-
-    {
-        "gorbit99/codewindow.nvim",
-        config = function()
-            local codewindow = require("codewindow")
-            codewindow.setup()
-            codewindow.apply_default_keybinds()
-            codewindow.open_minimap()
-        end,
-        init = function()
-            if run_lean then
-                return
-            end
-            vim.api.nvim_create_autocmd({ "BufRead" }, {
-                callback = function()
-                    vim.schedule(function()
-                        load_on_cwd("codewindow.nvim")
-                    end)
-                end,
-            })
-        end,
     },
 
     {
@@ -112,21 +71,16 @@ local plugins = {
         event = "VeryLazy",
     },
 
-    -- Editor
-
     {
-        "rmagatti/auto-session",
+        "folke/trouble.nvim",
         config = function()
-            local opts = require "custom.configs.auto-session"
-            require("auto-session").setup(opts)
+            require("core.utils").load_mappings("trouble")
         end,
-        init = function()
-            if run_lean then
-                return
-            end
-            load_on_cwd("auto-session");
-        end,
+        cmd = { "Trouble", "TroubleToggle" },
+        event = "BufReadPost",
     },
+
+    -- Editor
 
     {
         "kevinhwang91/nvim-ufo",
@@ -167,11 +121,61 @@ local plugins = {
     },
 
     {
+        "NTBBloodbath/color-converter.nvim",
         config = function()
             require("core.utils").load_mappings("color-converter")
         end,
-        "NTBBloodbath/color-converter.nvim",
-        ft = { "html", "eruby", "javascript", "css" },
+        event = "LspAttach",
+    },
+
+    {
+        "nvimdev/lspsaga.nvim",
+        config = function()
+            local opts = require("custom.configs.lspsaga")
+            require("lspsaga").setup(opts)
+        end,
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-tree/nvim-web-devicons",
+        },
+        event = "LspAttach",
+    },
+
+    {
+        "nvim-treesitter/nvim-treesitter-context",
+        event = "BufReadPost",
+    },
+
+    {
+        "smoka7/hop.nvim",
+        config = function()
+            require("core.utils").load_mappings("hop")
+            require("hop").setup { keys = "etovxqpdygfblzhckisuran" }
+        end,
+        cmd = { "HopWord", "HopLine", "HopLineStart", "HopWordCurrentLine" },
+        event = "BufReadPost",
+    },
+
+    {
+        "folke/persistence.nvim",
+        config = function()
+            local opts = require("custom.configs.persistence")
+            require("persistence").setup(opts)
+            require("persistence").load()
+        end,
+        lazy = false,
+    },
+
+    {
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        config = function()
+            local opts = require("custom.configs.nvim-treesitter-textobjects")
+            require("nvim-treesitter.configs").setup(opts)
+        end,
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+        },
+        event = "LspAttach",
     },
 
     -- Debugging
@@ -263,7 +267,7 @@ local plugins = {
             require("gitblame")
             require("core.utils").load_mappings("gitblame")
         end,
-        init = init_git("git-blame.nvim"),
+        event = "VeryLazy",
     },
 
     {
@@ -274,8 +278,19 @@ local plugins = {
         dependencies = {
             "tpope/vim-fugitive",
         },
-        ft = { "gitcommit", "diff" },
-        init = init_git("vim-flog"),
+        event = "VeryLazy",
+    },
+
+    {
+        "kdheepak/lazygit.nvim",
+        config = function()
+            require("core.utils").load_mappings("lazygit")
+        end,
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        },
+        cmd = "LazyGit",
+        event = "VeryLazy",
     },
 
     -- default custom plugins
