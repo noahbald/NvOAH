@@ -28,7 +28,7 @@ local ftMap = {
 
 M = {
     open_fold_hl_timeout = 150,
-    close_fold_kinds = {'imports', 'comment'},
+    close_fold_kinds = {'comment'},
     preview = {
         win_config = {
             border = {'', '─', '', '', '', '─', '', ''},
