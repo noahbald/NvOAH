@@ -45,7 +45,7 @@ M.mason = {
         -- web dev stuff
         "css-lsp",
         "html-lsp",
-        "typescript-language-server",
+        -- "typescript-language-server", -- replaced with typescript-tools.nvim
         "deno",
         "prettier",
         "ruby-lsp",

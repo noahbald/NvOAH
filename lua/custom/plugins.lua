@@ -5,14 +5,6 @@ if string.find(vim.v.progpath, "git") then
     run_lean = true
 end
 
-local function load_on_cwd(plugin)
-    local arg_count = vim.api.nvim_exec("echo argc()", true)
-    if tonumber(arg_count) ~= 0 then
-        return
-    end
-    require("lazy").load { plugins = { plugin } }
-end
-
 ---@type NvPluginSpec[]
 local plugins = {
 
@@ -143,6 +135,7 @@ local plugins = {
 
     {
         "nvim-treesitter/nvim-treesitter-context",
+        opts = require("custom.configs.treesitter-context"),
         event = "BufReadPost",
     },
 
@@ -176,6 +169,28 @@ local plugins = {
             "nvim-treesitter/nvim-treesitter",
         },
         event = "LspAttach",
+    },
+
+    {
+        "pmizio/typescript-tools.nvim",
+        config = function()
+            local opts = require("custom.configs.typescript-tools")
+            require("typescript-tools").setup(opts)
+        end,
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "neovim/nvim-lspconfig",
+        },
+        build = "npm i -g @styled/typescript-styled-plugin",
+        event = "LspAttach",
+    },
+
+    {
+        "rcarriga/nvim-notify",
+        config = function()
+            vim.notify = require("notify")
+        end,
+        event="VeryLazy",
     },
 
     -- Debugging
@@ -235,11 +250,11 @@ local plugins = {
             "mfussenegger/nvim-dap",
             "rcarriga/nvim-dap-ui",
             {
-                "microsoft/vscode-js-debug",
+                "micrlosoft/vscode-js-debug",
                 build = "npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out",
             }
         },
-        ft = "javascript",
+        ft = { "javascript", "typescript" },
     },
 
     -- Tools
