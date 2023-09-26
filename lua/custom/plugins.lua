@@ -8,35 +8,29 @@ end
 ---@type NvPluginSpec[]
 local plugins = {
 
-    -- Override plugin definition options
-    -- UI
+    -- NOTE: Following NvChad/nvcommunity categories
 
+    ---- Completion
+    -- TODO: Copilot, if work gives me a license
+    -- TODO: llm.nvim, for locally installed LLMs
+
+    ---- Diagnostics
+
+    -- Display list of diagnostics
     {
-        "echasnovski/mini.animate",
+        "folke/trouble.nvim",
         config = function()
-            local opts = require "custom.configs.mini"
-            require("mini.animate").setup(opts.animate)
+            require("core.utils").load_mappings("trouble")
         end,
-        event = "VeryLazy",
+        cmd = { "Trouble", "TroubleToggle" },
+        event = "BufReadPost",
     },
 
-    {
-        "echasnovski/mini.trailspace",
-        event = "VeryLazy",
-    },
+    ---- Editor
 
-    {
-        "RRethy/vim-illuminate",
-        config = function()
-            local opts = require("custom.configs.illuminate")
-            require("illuminate").configure(opts)
-        end,
-        dependencies = {
-            "nvim-treesitter",
-        },
-        event = { "CursorHold", "CursorHoldI" },
-    },
+    --- Editor > Essentials
 
+    -- Tabs that work like most editors
     {
         "romgrk/barbar.nvim",
         dependencies = {
@@ -51,6 +45,48 @@ local plugins = {
         name = "barbar",
     },
 
+    -- Automatically restore sessions for a workspace
+    {
+        "folke/persistence.nvim",
+        config = function()
+            local opts = require("custom.configs.persistence")
+            require("persistence").setup(opts)
+            require("persistence").load()
+        end,
+        init = function()
+            vim.api.nvim_create_autocmd("FileType", {
+                group = vim.api.nvim_create_augroup("disabled_persistence"),
+                pattern = { "gitcommit" },
+                callback = function()
+                    require("persistence").stop()
+                end,
+            })
+        end,
+        lazy = false,
+    },
+
+    --- Editor > Visuals
+
+    -- Make whitespace at end of line visible
+    {
+        "echasnovski/mini.trailspace",
+        event = "VeryLazy",
+    },
+
+    -- Highlight other uses of words under the cursor
+    {
+        "RRethy/vim-illuminate",
+        config = function()
+            local opts = require("custom.configs.illuminate")
+            require("illuminate").configure(opts)
+        end,
+        dependencies = {
+            "nvim-treesitter",
+        },
+        event = { "CursorHold", "CursorHoldI" },
+    },
+
+    -- Highlight TODO comments
     {
         "folke/todo-comments.nvim",
         config = function()
@@ -63,17 +99,45 @@ local plugins = {
         event = "VeryLazy",
     },
 
+    -- Show NeoVim notifications in a nicer view
     {
-        "folke/trouble.nvim",
+        "rcarriga/nvim-notify",
         config = function()
-            require("core.utils").load_mappings("trouble")
+            vim.notify = require("notify")
         end,
-        cmd = { "Trouble", "TroubleToggle" },
-        event = "BufReadPost",
+        event="VeryLazy",
     },
 
-    -- Editor
+    --- Editor > Utilities
 
+    -- Cycle between different color formats
+    {
+        "NTBBloodbath/color-converter.nvim",
+        config = function()
+            require("core.utils").load_mappings("color-converter")
+        end,
+        event = "LspAttach",
+    },
+
+    -- Global search and replace
+    {
+        "nvim-pack/nvim-spectre",
+        config = function()
+            require("spectre").setup()
+            require("core.utils").load_mappings("spectre")
+        end,
+        keys = {
+            { "<leader>fr", mode = "n", desc = "Find and replace" },
+            { "<leader>fr", mode = "v", desc = "Find and replace" },
+        },
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        },
+    },
+
+    ---- Folds
+
+    -- Better automatic folds and more in line with other editors
     {
         "kevinhwang91/nvim-ufo",
         config = function()
@@ -87,6 +151,97 @@ local plugins = {
         event = "VeryLazy",
     },
 
+    ---- Git
+
+    -- Display author and git message for current line
+    {
+        "f-person/git-blame.nvim",
+        config = function()
+            require("gitblame")     
+            require("core.utils").load_mappings("gitblame")
+        end,
+        event = "VeryLazy",
+    },
+
+    -- Display lazygit (a git client) in a window with Vim motions
+    {
+        "kdheepak/lazygit.nvim",
+        config = function()
+            require("core.utils").load_mappings("lazygit")
+        end,
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        },
+        cmd = "LazyGit",
+        event = "VeryLazy",
+    },
+
+    ---- LSP
+
+    --- LSP > Language
+
+    -- TypeScript LSP made more performant by using native TS Server (like VSCode)
+    {
+        "pmizio/typescript-tools.nvim",
+        config = function()
+            local opts = require("custom.configs.typescript-tools")
+            require("typescript-tools").setup(opts)
+        end,
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "neovim/nvim-lspconfig",
+        },
+        build = "npm i -g @styled/typescript-styled-plugin",
+        event = "LspAttach",
+    },
+
+    --- LSP > Completion
+
+    -- Use CSS selectors as shortcuts for HTML
+    {
+        "mattn/emmet-vim",
+        ft = { "html", "eruby", "javascriptreact" },
+    },
+
+    --- LSP > Contextual
+
+    -- Use LSP to improve editor (Breadcrumbs, Code actions window) 
+    {
+        "nvimdev/lspsaga.nvim",
+        config = function()
+            local opts = require("custom.configs.lspsaga")
+            require("lspsaga").setup(opts)
+        end,
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-tree/nvim-web-devicons",
+        },
+        event = "LspAttach",
+    },
+
+    -- Add more motions from information provided by LSP (eg Delete-In-Function)
+    {
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        config = function()
+            local opts = require("custom.configs.nvim-treesitter-textobjects")
+            require("nvim-treesitter.configs").setup(opts)
+        end,
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+        },
+        event = "LspAttach",
+    },
+
+    -- Keep outer scope definitions in view at top of view 
+    {
+        "nvim-treesitter/nvim-treesitter-context",
+        opts = require("custom.configs.treesitter-context"),
+        event = "BufReadPost",
+    },
+
+    --- LSP > Formatting
+
+    -- Add commands for running prettier
     {
         "MunifTanjim/prettier.nvim",
         config = function()
@@ -107,38 +262,20 @@ local plugins = {
         end,
     },
 
-    {
-        "mattn/emmet-vim",
-        ft = { "html", "eruby", "javascript" },
-    },
+    ---- Motion
 
+    -- Adds transitions between jumps
     {
-        "NTBBloodbath/color-converter.nvim",
+        "echasnovski/mini.animate",
         config = function()
-            require("core.utils").load_mappings("color-converter")
+            local opts = require "custom.configs.mini"
+            require("mini.animate").setup(opts.animate)
         end,
-        event = "LspAttach",
+        event = "VeryLazy",
     },
 
-    {
-        "nvimdev/lspsaga.nvim",
-        config = function()
-            local opts = require("custom.configs.lspsaga")
-            require("lspsaga").setup(opts)
-        end,
-        dependencies = {
-            "nvim-treesitter/nvim-treesitter",
-            "nvim-tree/nvim-web-devicons",
-        },
-        event = "LspAttach",
-    },
 
-    {
-        "nvim-treesitter/nvim-treesitter-context",
-        opts = require("custom.configs.treesitter-context"),
-        event = "BufReadPost",
-    },
-
+    -- Adds shortcut to jump to any visible word
     {
         "smoka7/hop.nvim",
         config = function()
@@ -149,52 +286,11 @@ local plugins = {
         event = "BufReadPost",
     },
 
-    {
-        "folke/persistence.nvim",
-        config = function()
-            local opts = require("custom.configs.persistence")
-            require("persistence").setup(opts)
-            require("persistence").load()
-        end,
-        lazy = false,
-    },
+    ---- NOTE: Not following NvChad/nvcommunity categories
 
-    {
-        "nvim-treesitter/nvim-treesitter-textobjects",
-        config = function()
-            local opts = require("custom.configs.nvim-treesitter-textobjects")
-            require("nvim-treesitter.configs").setup(opts)
-        end,
-        dependencies = {
-            "nvim-treesitter/nvim-treesitter",
-        },
-        event = "LspAttach",
-    },
+    ---- Debugging
 
-    {
-        "pmizio/typescript-tools.nvim",
-        config = function()
-            local opts = require("custom.configs.typescript-tools")
-            require("typescript-tools").setup(opts)
-        end,
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "neovim/nvim-lspconfig",
-        },
-        build = "npm i -g @styled/typescript-styled-plugin",
-        event = "LspAttach",
-    },
-
-    {
-        "rcarriga/nvim-notify",
-        config = function()
-            vim.notify = require("notify")
-        end,
-        event="VeryLazy",
-    },
-
-    -- Debugging
-
+    -- Provide client for Debug Adaptor Protocol
     {
         "mfussenegger/nvim-dap",
         config = function()
@@ -205,6 +301,7 @@ local plugins = {
         },
     },
 
+    -- Provide UI to control actively running DAP
     {
         "rcarriga/nvim-dap-ui",
         dependencies = {
@@ -227,6 +324,7 @@ local plugins = {
         end,
     },
 
+    -- Store breakpoints on session save and load on session restore
     {
         "Weissle/persistent-breakpoints.nvim",
         config = function()
@@ -236,6 +334,7 @@ local plugins = {
         end,
     },
 
+    -- Provide access to VSCode's DAP for JavaScript
     {
         "mxsdev/nvim-dap-vscode-js",
         config = function()
@@ -257,59 +356,11 @@ local plugins = {
         ft = { "javascript", "typescript" },
     },
 
-    -- Tools
+    ---- NOTE: From NvChad's example config
 
-    {
-        "nvim-pack/nvim-spectre",
-        config = function()
-            require("spectre").setup()
-            require("core.utils").load_mappings("spectre")
-        end,
-        keys = {
-            { "<leader>fr", mode = "n", desc = "Find and replace" },
-            { "<leader>fr", mode = "v", desc = "Find and replace" },
-        },
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-        },
-    },
+    ---- default custom plugins
 
-    -- Git
-
-    {
-        "f-person/git-blame.nvim",
-        config = function()
-            require("gitblame")
-            require("core.utils").load_mappings("gitblame")
-        end,
-        event = "VeryLazy",
-    },
-
-    {
-        "rbong/vim-flog",
-        config = function()
-            require("core.utils").load_mappings("flog")
-        end,
-        dependencies = {
-            "tpope/vim-fugitive",
-        },
-        event = "VeryLazy",
-    },
-
-    {
-        "kdheepak/lazygit.nvim",
-        config = function()
-            require("core.utils").load_mappings("lazygit")
-        end,
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-        },
-        cmd = "LazyGit",
-        event = "VeryLazy",
-    },
-
-    -- default custom plugins
-
+    -- Allow configuration of NeoVim's LSP client
     {
         "neovim/nvim-lspconfig",
         dependencies = {
@@ -327,12 +378,13 @@ local plugins = {
         end, -- Override to setup mason-lspconfig
     },
 
-    -- override plugin configs
+    -- Automatically install and update LSPs
     {
         "williamboman/mason.nvim",
         opts = overrides.mason
     },
 
+    -- Provide plugins access to tree-sitter, a Concrete Syntax Tree generator
     {
         "nvim-treesitter/nvim-treesitter",
         opts = overrides.treesitter,
@@ -341,12 +393,13 @@ local plugins = {
         },
     },
 
+    -- Adds a file tree that works like most editors
     {
         "nvim-tree/nvim-tree.lua",
         opts = overrides.nvimtree,
     },
 
-    -- Install a plugin
+    -- Pressing a vertical cursor key in quick succession will return to insert (ie `jj` or `jk`)
     {
         "max397574/better-escape.nvim",
         event = "InsertEnter",
