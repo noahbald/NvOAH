@@ -16,7 +16,19 @@ M.general = {
     },
 }
 
--- UI
+---- Diagnostics
+
+M.trouble = {
+    plugin = true,
+
+    n = {
+        ["<leader>tb"] = { "<cmd> TroubleToggle <cr>", "Toggle issues" },
+    },
+}
+
+---- Editor
+
+-- Editor > Essentials
 
 M.barbar = {
     n = {
@@ -31,60 +43,6 @@ M.barbar = {
     }
 }
 
-M["todo-comments"] = {
-    plugin = true,
-
-    n = {
-        ["<leader>ft"] = { "<cmd> TodoTelescope <CR>", "Find TODOs" },
-    },
-}
-
-M.trouble = {
-    plugin = true,
-    
-    n = {
-        ["<leader>tb"] = { "<cmd> TroubleToggle <cr>", "Toggle issues" },
-    },
-}
-
--- Editor
-
-M.prettier = {
-    plugin = true,
-
-    n = {
-        ["<leader>pb"] = { "<cmd> Prettier <CR>", "Run Prettier on buffer" },
-    }
-}
-
-M["color-converter"] = {
-    plugin = true,
-
-    n = {
-        ["<leader>cl"] = { "<cmd> lua require(\"color-converter\").cycle() <CR>", "Cycle Colour Conversion" },
-        ["<leader>c#"] = { "<cmd> lua require(\"color-converter\").to_hex() <CR>", "Convert color to hex" },
-    }
-}
-
-M.lspsaga = {
-    plugin = true,
-
-    n = {
-        ["<leader>ca"] = { "<Esc>:Lspsaga code_action<CR>", "Code action" },
-        ["<leacer>ra"] = { "<Esc>:Lspsaga rename ++project<CR>", "Rename action" },
-    },
-}
-
-M.hop = {
-    plugin = true,
-
-    n = {
-        ["<leader>gw"] = { "<cmd> HopWord <cr>", "Go to word" },
-        ["<leader>gl"] = { "<cmd> HopLine <cr>", "Go to line" },
-        ["<leader>gL"] = { "<cmd> HopLineStart <cr>", "Go to line start" },
-    },
-}
-
 M.persistence = {
     plugin = true,
 
@@ -93,7 +51,26 @@ M.persistence = {
     },
 }
 
--- Tools
+-- Editor > Visuals
+
+M["todo-comments"] = {
+    plugin = true,
+
+    n = {
+        ["<leader>ft"] = { "<cmd> TodoTelescope <CR>", "Find TODOs" },
+    },
+}
+
+-- Editor > Utilities
+
+M.ccc = {
+    plugin = true,
+
+    n = {
+        ["<leader>cc"] = { "<cmd> CccConvert <cr>", "Convert color" },
+        ["<leader>cp"] = { "<cmd> CccPick <cr>", "Open color picker" },
+    },
+}
 
 M.spectre = {
     plugin = true,
@@ -106,7 +83,67 @@ M.spectre = {
     },
 }
 
--- Debugging
+---- Folds
+
+---- Git
+
+M.gitblame = {
+    plugin = true,
+
+    n = {
+        ["<leader>gs"] = { "<cmd> GitBlameCopySHA <CR>", "Copy line's Git SHA" },
+    },
+}
+
+M.lazygit = {
+    plugin = true,
+
+    n = {
+        ["<leader>lg"] = { "<cmd> LazyGitCurrentFile <cr>", "Show lazy git" },
+    },
+}
+
+---- LSP
+
+-- LSP > Language
+
+-- LSP > Completion
+
+-- LSP > Contextual
+
+M.lspsaga = {
+    plugin = true,
+
+    n = {
+        ["<leader>ca"] = { "<Esc>:Lspsaga code_action<CR>", "Code action" },
+        ["<leacer>ra"] = { "<Esc>:Lspsaga rename ++project<CR>", "Rename action" },
+    },
+}
+
+-- LSP > Formatting
+
+M.prettier = {
+    plugin = true,
+
+    n = {
+        ["<leader>pb"] = { "<cmd> Prettier <CR>", "Run Prettier on buffer" },
+    }
+}
+
+---- Motion
+
+M.hop = {
+    plugin = true,
+
+    n = {
+        ["<leader>w"] = { "<cmd> HopWord <cr>", "Go to word" },
+        ["<leader>gw"] = { "<cmd> HopWord <cr>", "Go to word" },
+        ["<leader>gl"] = { "<cmd> HopLine <cr>", "Go to line" },
+        ["<leader>gL"] = { "<cmd> HopLineStart <cr>", "Go to line start" },
+    },
+}
+
+---- Debugging
 
 M.dap = {
     plugin = true,
@@ -135,33 +172,8 @@ M["dap-ui"] = {
         ["<leader>re"] = { "<cmd> lua require('dapui').eval(vim.fn.input '[Expression] > ') <CR>", "DAP: Eval input" },
     }
 }
--- Git
 
-M.flog = {
-    plugin = true,
-
-    n = {
-        ["<leader>gg"] = { "<cmd> Flog <cr>", "Git Graph" },
-    },
-}
-
-M.gitblame = {
-    plugin = true,
-
-    n = {
-        ["<leader>gs"] = { "<cmd> GitBlameCopySHA <CR>", "Copy line's Git SHA" },
-    },
-}
-
-M.lazygit = {
-    plugin = true,
-
-    n = {
-        ["<leader>lg"] = { "<cmd> LazyGitCurrentFile <cr>", "Show lazy git" },
-    },
-}
-
--- Overrides
+---- Overrides
 
 M.telescope = {
     n = {

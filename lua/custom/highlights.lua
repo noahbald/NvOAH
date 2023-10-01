@@ -33,6 +33,12 @@ M.add = {
     IlluminatedWordWrite = { bg = "grey" },
 
     NvimTreeOpenedFolderName = { fg = "green", bold = true },
+    BufferVisible = { bg = "black" },
+    BufferVisibleSign = { bg = "black" },
+    BufferVisibleSignRight = { bg = "black" },
+    BufferInactive = { bg = "black" },
+    BufferInactiveSign = { bg = "black" },
+    BufferInactiveSignRight = { bg = "black" },
 }
 
 return M

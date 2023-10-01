@@ -4,6 +4,8 @@ local M = {
         tsserver_plugins = {
             "@styled/typescript-styled-plugin",
         },
+        -- Prevent file table overflow. FYI this is double the memory that VSCode allows
+        tsserver_max_memory = "8192",
     },
 }
 return M

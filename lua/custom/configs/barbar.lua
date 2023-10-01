@@ -1,5 +1,4 @@
 local opts = {
-    auto_hide = true,
     preset = "slanted",
     icons = {
         current = { button = "󰅖" },

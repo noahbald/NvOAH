@@ -1,5 +1,3 @@
-require("core.utils").load_mappings("lspsaga")
-
 local M = {
     lightbuilb = {
         virtual_text = false,

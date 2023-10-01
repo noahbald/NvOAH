@@ -1,5 +1,6 @@
 local overrides = require("custom.configs.overrides")
 
+-- Define contexts where heavy features should be disabled
 local run_lean = false
 if string.find(vim.v.progpath, "git") then
     run_lean = true
@@ -19,7 +20,7 @@ local plugins = {
     -- Display list of diagnostics
     {
         "folke/trouble.nvim",
-        config = function()
+        init = function()
             require("core.utils").load_mappings("trouble")
         end,
         cmd = { "Trouble", "TroubleToggle" },
@@ -37,6 +38,7 @@ local plugins = {
             "nvim-tree/nvim-web-devicons",
         },
         init = function()
+            require("which-key").register({ ["<leader>t"] = { name = "+tab"} })
             vim.g.barbar_auto_setup = false
         end,
         opts = require 'custom.configs.barbar',
@@ -48,21 +50,12 @@ local plugins = {
     -- Automatically restore sessions for a workspace
     {
         "folke/persistence.nvim",
-        config = function()
-            local opts = require("custom.configs.persistence")
-            require("persistence").setup(opts)
+        init = function()
             require("persistence").load()
         end,
-        init = function()
-            vim.api.nvim_create_autocmd("FileType", {
-                group = vim.api.nvim_create_augroup("disabled_persistence"),
-                pattern = { "gitcommit" },
-                callback = function()
-                    require("persistence").stop()
-                end,
-            })
-        end,
+        opts = require("custom.configs.persistence"),
         lazy = false,
+        enabled = vim.fn.argc() == 0,
     },
 
     --- Editor > Visuals
@@ -76,10 +69,10 @@ local plugins = {
     -- Highlight other uses of words under the cursor
     {
         "RRethy/vim-illuminate",
-        config = function()
-            local opts = require("custom.configs.illuminate")
+        config = function(_, opts)
             require("illuminate").configure(opts)
         end,
+        opts = require("custom.configs.illuminate"),
         dependencies = {
             "nvim-treesitter",
         },
@@ -89,8 +82,7 @@ local plugins = {
     -- Highlight TODO comments
     {
         "folke/todo-comments.nvim",
-        config = function()
-            require("todo-comments").setup()
+        init = function()
             require("core.utils").load_mappings("todo-comments")
         end,
         dependencies = {
@@ -102,37 +94,53 @@ local plugins = {
     -- Show NeoVim notifications in a nicer view
     {
         "rcarriga/nvim-notify",
-        config = function()
+        init = function()
             vim.notify = require("notify")
         end,
         event="VeryLazy",
+        enabled = not run_lean,
     },
 
     --- Editor > Utilities
 
-    -- Cycle between different color formats
+    -- Color pickers and coversions
     {
-        "NTBBloodbath/color-converter.nvim",
-        config = function()
-            require("core.utils").load_mappings("color-converter")
+        "uga-rosa/ccc.nvim",
+        init = function()
+            require("core.utils").load_mappings("ccc")
+            require("which-key").register({ ["<leader>c"] = { name = "color" } })
         end,
+        opts = require("custom.configs.ccc"),
         event = "LspAttach",
     },
 
     -- Global search and replace
     {
         "nvim-pack/nvim-spectre",
-        config = function()
-            require("spectre").setup()
+        init = function()
             require("core.utils").load_mappings("spectre")
         end,
         keys = {
-            { "<leader>fr", mode = "n", desc = "Find and replace" },
-            { "<leader>fr", mode = "v", desc = "Find and replace" },
+            { "<leader>f", mode = "n", desc = "Find and replace" },
+            { "<leader>f", mode = "v", desc = "Find and replace" },
         },
         dependencies = {
             "nvim-lua/plenary.nvim",
         },
+    },
+
+    -- Show warnings when bad vim habits are used
+    {
+        "m4xshen/hardtime.nvim",
+        config = function()
+            require("hardtime").setup()
+        end,
+        dependencies = {
+            "MunifTanjim/nui.nvim",
+            "nvim-lua/plenary.nvim",
+        },
+        event = "VeryLazy",
+        enabled = not run_lean,
     },
 
     ---- Folds
@@ -149,6 +157,7 @@ local plugins = {
             "luukvbaal/statuscol.nvim",
         },
         event = "VeryLazy",
+        enabled = not run_lean,
     },
 
     ---- Git
@@ -156,17 +165,17 @@ local plugins = {
     -- Display author and git message for current line
     {
         "f-person/git-blame.nvim",
-        config = function()
-            require("gitblame")     
+        init = function()
             require("core.utils").load_mappings("gitblame")
         end,
         event = "VeryLazy",
+        enabled = not run_lean,
     },
 
     -- Display lazygit (a git client) in a window with Vim motions
     {
         "kdheepak/lazygit.nvim",
-        config = function()
+        init = function()
             require("core.utils").load_mappings("lazygit")
         end,
         dependencies = {
@@ -183,15 +192,18 @@ local plugins = {
     -- TypeScript LSP made more performant by using native TS Server (like VSCode)
     {
         "pmizio/typescript-tools.nvim",
-        config = function()
-            local opts = require("custom.configs.typescript-tools")
-            require("typescript-tools").setup(opts)
-        end,
+        opts = require("custom.configs.typescript-tools"),
         dependencies = {
             "nvim-lua/plenary.nvim",
             "neovim/nvim-lspconfig",
         },
         build = "npm i -g @styled/typescript-styled-plugin",
+        event = "LspAttach",
+    },
+
+    -- Convert strings to template strings when `${}` syntax is used
+    {
+        "axelvc/template-string.nvim",
         event = "LspAttach",
     },
 
@@ -208,24 +220,25 @@ local plugins = {
     -- Use LSP to improve editor (Breadcrumbs, Code actions window) 
     {
         "nvimdev/lspsaga.nvim",
-        config = function()
-            local opts = require("custom.configs.lspsaga")
-            require("lspsaga").setup(opts)
+        init = function()
+            require("core.utils").load_mappings("lspsaga")
         end,
+        opts = require("custom.configs.lspsaga"),
         dependencies = {
             "nvim-treesitter/nvim-treesitter",
             "nvim-tree/nvim-web-devicons",
         },
         event = "LspAttach",
+        enabled = not run_lean,
     },
 
     -- Add more motions from information provided by LSP (eg Delete-In-Function)
     {
         "nvim-treesitter/nvim-treesitter-textobjects",
-        config = function()
-            local opts = require("custom.configs.nvim-treesitter-textobjects")
+        config = function(_, opts)
             require("nvim-treesitter.configs").setup(opts)
         end,
+        opts = require("custom.configs.nvim-treesitter-textobjects"),
         dependencies = {
             "nvim-treesitter/nvim-treesitter",
         },
@@ -237,6 +250,7 @@ local plugins = {
         "nvim-treesitter/nvim-treesitter-context",
         opts = require("custom.configs.treesitter-context"),
         event = "BufReadPost",
+        enabled = not run_lean,
     },
 
     --- LSP > Formatting
@@ -244,12 +258,6 @@ local plugins = {
     -- Add commands for running prettier
     {
         "MunifTanjim/prettier.nvim",
-        config = function()
-            require("prettier").setup({
-                bin = "prettier", -- or `prettierd`
-            })
-            require("core.utils").load_mappings("prettier")
-        end,
         init = function()
             local dir = vim.fn.expand("%:p:h")
             local is_prettier_project = require("custom.configs.prettier").find_prettier_conf(dir)
@@ -257,9 +265,12 @@ local plugins = {
                 return
             end
             vim.schedule(function()
+                require("core.utils").load_mappings("prettier")
                 require("lazy").load { plugins = { "prettier.nvim" } }
             end)
         end,
+        opts = { bin = "prettier" }, -- or `prettierd`
+        event = "LspAttach",
     },
 
     ---- Motion
@@ -278,10 +289,10 @@ local plugins = {
     -- Adds shortcut to jump to any visible word
     {
         "smoka7/hop.nvim",
-        config = function()
+        init = function()
             require("core.utils").load_mappings("hop")
-            require("hop").setup { keys = "etovxqpdygfblzhckisuran" }
         end,
+        opts = { keys = "etovxqpdygfblzhckisuran" },
         cmd = { "HopWord", "HopLine", "HopLineStart", "HopWordCurrentLine" },
         event = "BufReadPost",
     },
@@ -293,7 +304,8 @@ local plugins = {
     -- Provide client for Debug Adaptor Protocol
     {
         "mfussenegger/nvim-dap",
-        config = function()
+        init = function()
+            require("which-key").register({ ["<leader>d"] = { name = "+debug" }})
             require("core.utils").load_mappings("dap")
         end,
         dependencies = {
@@ -327,11 +339,7 @@ local plugins = {
     -- Store breakpoints on session save and load on session restore
     {
         "Weissle/persistent-breakpoints.nvim",
-        config = function()
-            require("persistent-breakpoints").setup {
-                load_breakpoints_event = { "BufReadPost" },
-            }
-        end,
+        opts = { load_breakpoints_event = { "BufReadPost" } },
     },
 
     -- Provide access to VSCode's DAP for JavaScript
@@ -349,8 +357,9 @@ local plugins = {
             "mfussenegger/nvim-dap",
             "rcarriga/nvim-dap-ui",
             {
-                "micrlosoft/vscode-js-debug",
-                build = "npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out",
+                -- FIXME: Clone tends to fail on update
+                "microsoft/vscode-js-debug",
+                build = "npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && npx move-file dist out",
             }
         },
         ft = { "javascript", "typescript" },
@@ -405,6 +414,16 @@ local plugins = {
         event = "InsertEnter",
         config = function()
             require("better_escape").setup()
+        end,
+    },
+
+    {
+        "folke/which-key.nvim",
+        init = function()
+            require("which-key").register({
+                ["<leader>f"] = { name = "+find" },
+                ["<leader>g"] = { name = "+git" },
+            })
         end,
     },
 
