@@ -13,6 +13,10 @@ vim.opt.shiftwidth = 4
 vim.opt.spell = true
 vim.opt.spelllang = "en_au"
 
+if (vim.loop.os_uname().sysname == "Windows_NT") then
+    -- vim.o.shell = "C:\\PROGRA~1\\PowerShell\\7\\pwsh.exe"
+end
+
 -- Restore barbar session
 vim.api.nvim_create_user_command(
     'Mksession',

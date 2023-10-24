@@ -15,6 +15,36 @@ local plugins = {
     -- TODO: Copilot, if work gives me a license
     -- TODO: llm.nvim, for locally installed LLMs
 
+    -- Run ollama models for code completion, setup for codellama:7b-code
+    {
+        "huggingface/llm.nvim",
+        opts = {
+            tokens_to_clear = { "<EOT>" },
+            fim = {
+                enabled = true,
+                prefix = "<PRE> ",
+                middle = " <MID>",
+                suffix = " <SUF>",
+            },
+            model = "http://localhost:11434/api/generate",
+            context_window = 4096,
+            tokenizer = {
+                repository = "codellama/CodeLlama-7b-hf",
+            },
+        },
+        event = "LspAttach",
+        enabled = false,
+    },
+
+    -- Run ollama models from neovim
+    {
+        "David-Kunz/gen.nvim",
+        setup = function()
+            require("gen").setup()
+        end,
+        cmd = "Gen",
+    },
+
     ---- Diagnostics
 
     -- Display list of diagnostics
@@ -99,6 +129,14 @@ local plugins = {
         end,
         event="VeryLazy",
         enabled = not run_lean,
+    },
+
+    -- Use telescope instead of vim's native select
+    {
+        "nvim-telescope/telescope-ui-select.nvim",
+        init = function()
+            require("telescope").load_extension("ui-select")
+        end
     },
 
     --- Editor > Utilities

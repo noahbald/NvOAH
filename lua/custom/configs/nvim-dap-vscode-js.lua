@@ -1,3 +1,18 @@
+require("dap").adapters["pwa-node"] = {
+    type = "server",
+    host = "localhost",
+    port = "${port}",
+    executable = {
+        command = "js-debug-adapter",
+        args = { "${port}" },
+    },
+}
+
+require("dap").adapters["node-terminal"] = {
+    type = "executable",
+    command = "js-debug-adapter",
+}
+
 for _, language in ipairs({ "typescript", "javascript" }) do
     require("dap").configurations[language] = {
         {
@@ -9,7 +24,7 @@ for _, language in ipairs({ "typescript", "javascript" }) do
         },
         {
             type = "pwa-node",
-            request = "launch",
+            request = "attach",
             name = "Attach",
             processId = require("dap.utils").pick_process,
             cwd = "${workspaceFolder}",
@@ -17,9 +32,11 @@ for _, language in ipairs({ "typescript", "javascript" }) do
         {
             type = "node-terminal",
             request = "launch",
+            protocol = "inspector",
+            console = "integratedTerminal",
             name = "Launch terminal",
             cwd = "${workspaceFolder}",
-            command = "zsh",
+            autoAttachChildProcess = true,
         },
         {
             type = "pwa-node",
