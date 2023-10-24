@@ -245,14 +245,6 @@ local plugins = {
         event = "LspAttach",
     },
 
-    --- LSP > Completion
-
-    -- Use CSS selectors as shortcuts for HTML
-    {
-        "mattn/emmet-vim",
-        ft = { "html", "eruby", "javascriptreact" },
-    },
-
     --- LSP > Contextual
 
     -- Use LSP to improve editor (Breadcrumbs, Code actions window) 
